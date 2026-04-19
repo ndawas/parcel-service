@@ -9,8 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sn.edu.ept.parcel.dto.ParcelRequest;
 import sn.edu.ept.parcel.dto.ParcelResponse;
+import sn.edu.ept.parcel.dto.TariffResponse;
 import sn.edu.ept.parcel.enums.ParcelStatus;
 import sn.edu.ept.parcel.service.ParcelService;
+import sn.edu.ept.parcel.service.TariffService;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,52 +24,32 @@ import java.util.UUID;
 public class ParcelController {
 
     private final ParcelService parcelService;
+    private final TariffService tariffService;
 
-    // ──────────────────────────────────────────────
-    // POST /api/parcels
-    // Créer un nouveau colis
-    // ──────────────────────────────────────────────
     @PostMapping
     @Operation(summary = "Créer un nouveau colis")
     public ResponseEntity<ParcelResponse> creerColis(@Valid @RequestBody ParcelRequest request) {
-        ParcelResponse response = parcelService.creerColis(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(parcelService.creerColis(request));
     }
 
-    // ──────────────────────────────────────────────
-    // GET /api/parcels/{id}
-    // Récupérer un colis par son ID
-    // ──────────────────────────────────────────────
     @GetMapping("/{id}")
     @Operation(summary = "Récupérer un colis par son ID")
     public ResponseEntity<ParcelResponse> getColisById(@PathVariable UUID id) {
         return ResponseEntity.ok(parcelService.getColisById(id));
     }
 
-    // ──────────────────────────────────────────────
-    // GET /api/parcels
-    // Récupérer tous les colis (admin)
-    // ──────────────────────────────────────────────
     @GetMapping
-    @Operation(summary = "Récupérer tous les colis (admin)")
+    @Operation(summary = "Récupérer tous les colis")
     public ResponseEntity<List<ParcelResponse>> getAllColis() {
         return ResponseEntity.ok(parcelService.getAllColis());
     }
 
-    // ──────────────────────────────────────────────
-    // GET /api/parcels/client/{clientId}
-    // Récupérer les colis d'un client
-    // ──────────────────────────────────────────────
     @GetMapping("/client/{clientId}")
-    @Operation(summary = "Récupérer tous les colis d'un client")
+    @Operation(summary = "Récupérer les colis d'un client")
     public ResponseEntity<List<ParcelResponse>> getColisByClient(@PathVariable UUID clientId) {
         return ResponseEntity.ok(parcelService.getColisByClient(clientId));
     }
 
-    // ──────────────────────────────────────────────
-    // PATCH /api/parcels/{id}/statut
-    // Mettre à jour le statut d'un colis
-    // ──────────────────────────────────────────────
     @PatchMapping("/{id}/statut")
     @Operation(summary = "Mettre à jour le statut d'un colis")
     public ResponseEntity<ParcelResponse> updateStatut(
@@ -76,14 +58,16 @@ public class ParcelController {
         return ResponseEntity.ok(parcelService.updateStatut(id, nouveauStatut));
     }
 
-    // ──────────────────────────────────────────────
-    // DELETE /api/parcels/{id}
-    // Supprimer un colis (uniquement si EN_ATTENTE)
-    // ──────────────────────────────────────────────
     @DeleteMapping("/{id}")
-    @Operation(summary = "Supprimer un colis (uniquement si EN_ATTENTE)")
+    @Operation(summary = "Supprimer un colis")
     public ResponseEntity<Void> supprimerColis(@PathVariable UUID id) {
         parcelService.supprimerColis(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/calculate-tariff")
+    @Operation(summary = "Calculer le tarif d'un colis")
+    public ResponseEntity<TariffResponse> calculateTariff(@PathVariable UUID id) {
+        return ResponseEntity.ok(tariffService.calculateTariff(id));
     }
 }

@@ -13,14 +13,14 @@ import java.util.UUID;
 public class ParcelResponse {
 
     private UUID id;
-    private UUID clientId;
+    private UUID senderId;        // = clientId (nom attendu par order-service)
     private String description;
-    private ParcelType type;
-    private Double poidsKg;
+    private String type;          // String pour compatibilité Feign
+    private Double weight;        // = poidsKg (nom attendu par order-service)
     private Double volumeM3;
-    private ParcelStatus statut;
-    private AddressDto adresseOrigine;
-    private AddressDto adresseDestination;
+    private String status;        // String pour compatibilité Feign
+    private String originCity;    // = adresseOrigine.ville
+    private String destinationCity; // = adresseDestination.ville
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

@@ -25,16 +25,23 @@ public class ParcelMapper {
     public ParcelResponse toResponse(Parcel parcel) {
         ParcelResponse response = new ParcelResponse();
         response.setId(parcel.getId());
-        response.setClientId(parcel.getClientId());
+        response.setSenderId(parcel.getClientId());         // clientId → senderId
         response.setDescription(parcel.getDescription());
-        response.setType(parcel.getType());
-        response.setPoidsKg(parcel.getPoidsKg());
+        response.setType(parcel.getType().name());          // enum → String
+        response.setWeight(parcel.getPoidsKg());            // poidsKg → weight
         response.setVolumeM3(parcel.getVolumeM3());
-        response.setStatut(parcel.getStatut());
-        response.setAdresseOrigine(toAddressDto(parcel.getAdresseOrigine()));
-        response.setAdresseDestination(toAddressDto(parcel.getAdresseDestination()));
+        response.setStatus(parcel.getStatut().name());      // enum → String
         response.setCreatedAt(parcel.getCreatedAt());
         response.setUpdatedAt(parcel.getUpdatedAt());
+
+        // Adresses
+        if (parcel.getAdresseOrigine() != null) {
+            response.setOriginCity(parcel.getAdresseOrigine().getVille());
+        }
+        if (parcel.getAdresseDestination() != null) {
+            response.setDestinationCity(parcel.getAdresseDestination().getVille());
+        }
+
         return response;
     }
 
